@@ -1,0 +1,82 @@
+.container {
+  text-align: center;
+  margin-top: 80px;
+}
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+.text {
+  font-size: 30px;
+  color: rgba(32, 27, 16, 1);
+}
+.button {
+  padding: 20px 40px;
+  font-size: 24px;
+  background: rgba(42, 232, 129, 1);
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+}
+.buttonPurple {
+  width: 100%;
+  max-width: 361px;
+  border: none;
+  padding: 20.5px 27px;
+  font-weight: 500;
+  font-size: 24px;
+  line-height: 110.00000000000001%;
+  letter-spacing: 0%;
+  text-align: center;
+  border-radius: 25px;
+  background: rgba(203, 129, 255, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.spinner {
+  width: 60px;
+  height: 60px;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.buttons {
+  display: flex;
+  gap: 10px;
+}
+.buttonDone {
+  padding: 20px 40px;
+  font-size: 24px;
+  background: rgba(212, 250, 230, 1);
+  border: none;
+  border-radius: 25px;
+  cursor: default;
+}
+.buttonError {
+  padding: 20px 40px;
+  font-size: 24px;
+  background: rgba(255, 95, 0, 1);
+  color: white;
+  border: none;
+  border-radius: 25px;
+}
+.buttonCancel {
+  padding: 20px;
+  font-size: 24px;
+  background: rgba(32, 27, 16, 1);
+  border: none;
+  border-radius: 25px;
+  color: white;
+  cursor: pointer;
+}
+.done .buttonCancel,
+.error .buttonCancel {
+  top: 16px;
+  right: 16px;
+}

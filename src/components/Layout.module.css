@@ -1,0 +1,71 @@
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 40px 40px 0 40px;
+  color: rgba(32, 27, 16, 1);
+}
+
+.logos {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  justify-content: flex-start;
+}
+
+.tag {
+  padding: 4.77px 6.37px 6.37px 6.37px;
+  background: rgba(203, 129, 255, 1);
+}
+
+.text {
+  font-weight: 500;
+  font-size: 30px;
+  line-height: 90%;
+  text-transform: uppercase;
+}
+
+.navigation {
+  display: flex;
+  margin-left: auto;
+}
+
+.navList {
+  justify-content: space-between;
+  gap: 10px;
+  display: flex;
+  list-style: none;
+}
+
+.navItem {
+  padding: 13px 10px;
+  display: flex;
+  align-items: center;
+}
+
+.option {
+  font-weight: 400;
+  font-size: 24px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.activeOption {
+  font-weight: 400;
+  font-size: 24px;
+  text-decoration: none;
+  color: inherit;
+  border-bottom: 2px solid rgba(32, 27, 16, 1);
+}
+
+.icon {
+  width: 25px;
+  height: 25px;
+  vertical-align: top;
+  margin-right: 16px;
+}
+
+.main {
+  margin-top: 80px;
+  padding: 0 40px 40px 40px;
+}
