@@ -42,7 +42,9 @@ export class AnalyticsApi {
           const partial = JSON.parse(line);
           onProgress(partial);
           finalStats = partial;
-        } catch {}
+        } catch {
+          // ignore
+        }
       });
     }
 
@@ -51,7 +53,9 @@ export class AnalyticsApi {
         const finalData = JSON.parse(buffer);
         onProgress(finalData);
         finalStats = finalData;
-      } catch {}
+      } catch {
+        // ignore
+      }
     }
 
     return finalStats;

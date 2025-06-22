@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback } from 'react';
 import { useAnalyticsStore } from '../store/AnalyticsStore';
 import { useHistoryStore } from '../store/historyStore';
 import { DateService } from '../services/dateService';
@@ -72,7 +72,9 @@ export default function AnalyticsPage() {
             const partial = JSON.parse(line);
             updateStats(partial);
             finalStats = partial;
-          } catch {}
+          } catch {
+            // ignore
+          }
         });
       }
 
@@ -81,7 +83,9 @@ export default function AnalyticsPage() {
           const finalData = JSON.parse(buffer);
           updateStats(finalData);
           finalStats = finalData;
-        } catch {}
+        } catch {
+          // ignore
+        }
       }
 
       setStats(finalStats);

@@ -1,11 +1,10 @@
 import { createApiUrl } from './config.js';
-import { getReportParams, getFileParams } from '../config/generationConfig.js';
+import { getReportParams } from '../config/generationConfig.js';
 
 export class ReportApi {
   static async generateReport(customParams = {}) {
     const defaultParams = getReportParams();
     const params = { ...defaultParams, ...customParams };
-    const fileParams = getFileParams();
 
     const url = createApiUrl(
       `/report?size=${params.size}&withErrors=${params.withErrors}&maxSpend=${params.maxSpend}`,
