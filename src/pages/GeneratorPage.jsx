@@ -1,71 +1,13 @@
 import React from 'react';
-
-import { useState } from 'react';
+import { useReportGeneration } from '../hooks/useReportGeneration.js';
 import styles from './GeneratorPage.module.css';
 
 export default function GeneratorPage() {
-  const [status, setStatus] = useState('idle');
+  const { status, generateReport, reset } = useReportGeneration();
 
-  const handleGenerate = async () => {
-    setStatus('loading');
-    try {
-      const apiBase = import.meta.env.VITE_API_BASE;
-      const url = `${apiBase}/report?size=0.1&withErrors=off&maxSpend=1000`;
-
-      // console.log('API Base:', apiBase);
-      // console.log('Request URL:', url);
-
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-          Accept: 'text/csv, application/csv, */*',
-        },
-        mode: 'cors',
-        credentials: 'omit',
-      });
-
-      // console.log('Response status:', response.status);
-      // console.log('Response ok:', response.ok);
-      // console.log('Response headers:', response.headers);
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const contentType = response.headers.get('content-type');
-      // console.log('Content-Type:', contentType);
-
-      if (!response.body) {
-        throw new Error('Ответ не содержит данных');
-      }
-
-      const arrayBuffer = await response.arrayBuffer();
-      const blob = new Blob([arrayBuffer], { type: 'text/csv' });
-
-      // console.log('Blob size:', blob.size);
-      // console.log('Blob type:', blob.type);
-
-      if (blob.size === 0) {
-        throw new Error('Получен пустой файл от сервера');
-      }
-
-      const url_download = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url_download;
-      a.download = 'report.csv';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url_download);
-
-      setStatus('success');
-    } catch (err) {
-      console.error('Ошибка при генерации отчёта:', err);
-      setStatus('error');
-    }
+  const handleGenerate = () => {
+    generateReport();
   };
-
-  const reset = () => setStatus('idle');
 
   return (
     <div className={styles.container}>
@@ -82,38 +24,55 @@ export default function GeneratorPage() {
 
       {status === 'loading' && (
         <section className={`${styles.content} ${styles.loading}`}>
-          <p className={styles.text}>Идёт процесс генерации...</p>
-          <div className={styles.buttonPurple}>
+          <p className={styles.text}>
+            Сгенерируйте готовый csv-файл нажатием одной кнопки
+          </p>
+          <button className={styles.buttonPurple}>
             <img
-              className={styles.spinner}
+              className={styles.loader}
               src="/icons/loader.svg"
-              alt="Загрузка"
+              alt="loading"
             />
-          </div>
+          </button>
+          <p className={styles.text}>идёт процесс генерации</p>
         </section>
       )}
 
       {status === 'success' && (
         <section className={`${styles.content} ${styles.done}`}>
-          <p className={styles.text}>Файл сгенерирован!</p>
+          <p className={styles.text}>
+            Сгенерируйте готовый csv-файл нажатием одной кнопки
+          </p>
           <div className={styles.buttons}>
             <button className={styles.buttonDone}>Done!</button>
             <button className={styles.buttonCancel} onClick={reset}>
-              ✕
+              <img
+                className={styles.icon}
+                src="/icons/cancel.svg"
+                alt="cancel"
+              />
             </button>
           </div>
+          <p className={styles.text}>файл сгенерирован!</p>
         </section>
       )}
 
       {status === 'error' && (
         <section className={`${styles.content} ${styles.error}`}>
-          <p className={styles.text}>Упс, что-то пошло не так...</p>
+          <p className={styles.text}>
+            Сгенерируйте готовый csv-файл нажатием одной кнопки
+          </p>
           <div className={styles.buttons}>
             <button className={styles.buttonError}>Ошибка</button>
             <button className={styles.buttonCancel} onClick={reset}>
-              ✕
+              <img
+                className={styles.icon}
+                src="/icons/cancel.svg"
+                alt="cancel"
+              />
             </button>
           </div>
+          <p className={styles.textError}>упс, не то...</p>
         </section>
       )}
     </div>

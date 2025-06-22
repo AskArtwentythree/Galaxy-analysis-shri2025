@@ -2,37 +2,10 @@ import React, { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createPortal } from 'react-dom';
 import { useHistoryStore } from '../store/historyStore';
+import { DateService } from '../services/dateService';
 import styles from './HistoryPage.module.css';
 
 function Modal({ stats, onClose }) {
-  const formatDayOfYear = useCallback((dayNumber) => {
-    const months = [
-      'января',
-      'февраля',
-      'марта',
-      'апреля',
-      'мая',
-      'июня',
-      'июля',
-      'августа',
-      'сентября',
-      'октября',
-      'ноября',
-      'декабря',
-    ];
-    const daysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-
-    let remainingDays = dayNumber;
-    let month = 0;
-
-    while (remainingDays > daysInMonth[month]) {
-      remainingDays -= daysInMonth[month];
-      month++;
-    }
-
-    return `${remainingDays} ${months[month]}`;
-  }, []);
-
   const getDisplayValue = useCallback(
     (key, value) => {
       if (key === 'less_spent_value' && stats?.less_spent_civ) {
@@ -40,12 +13,12 @@ function Modal({ stats, onClose }) {
       }
 
       if (key === 'less_spent_at' || key === 'big_spent_at') {
-        return formatDayOfYear(parseInt(value));
+        return DateService.formatDayOfYear(parseInt(value));
       }
 
       return value;
     },
-    [stats, formatDayOfYear],
+    [stats],
   );
 
   const getFieldDescription = useCallback((key) => {

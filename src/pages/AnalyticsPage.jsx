@@ -1,6 +1,8 @@
 import React, { useCallback, useState } from 'react';
 import { useAnalyticsStore } from '../store/AnalyticsStore';
 import { useHistoryStore } from '../store/historyStore';
+import { DateService } from '../services/dateService';
+import { useFileUpload } from '../hooks/useFileUpload';
 import styles from './AnalyticsPage.module.css';
 
 export default function AnalyticsPage() {
@@ -17,54 +19,30 @@ export default function AnalyticsPage() {
   } = useAnalyticsStore();
 
   const { addEntry } = useHistoryStore();
-  const [isHovering, setIsHovering] = useState(false);
 
-  const onFileChange = useCallback(
-    (e) => {
-      const f = e.target.files[0];
-      if (f && (f.name.endsWith('.csv') || f.type === 'text/csv')) {
-        setFile(f);
-      } else if (f) {
-        setFile(f);
-        setError();
-      }
+  const handleFileSelect = useCallback(
+    (selectedFile) => {
+      setFile(selectedFile);
+    },
+    [setFile],
+  );
+
+  const handleFileError = useCallback(
+    (selectedFile) => {
+      setFile(selectedFile);
+      setError();
     },
     [setFile, setError],
   );
 
-  const onDrop = useCallback(
-    (e) => {
-      e.preventDefault();
-      setIsHovering(false);
-      const f = e.dataTransfer.files[0];
-      if (f && (f.name.endsWith('.csv') || f.type === 'text/csv')) {
-        setFile(f);
-      } else if (f) {
-        setFile(f);
-        setError();
-      }
-    },
-    [setFile, setError],
-  );
-
-  const handleDragEnter = useCallback((e) => {
-    e.preventDefault();
-    if (e.dataTransfer.types.includes('Files')) {
-      setIsHovering(true);
-    }
-  }, []);
-
-  const handleDragLeave = useCallback((e) => {
-    e.preventDefault();
-    if (!e.currentTarget.contains(e.relatedTarget)) {
-      setIsHovering(false);
-    }
-  }, []);
-
-  const handleDragOver = useCallback((e) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'copy';
-  }, []);
+  const {
+    isHovering,
+    handleDragEnter,
+    handleDragLeave,
+    handleDragOver,
+    handleDrop,
+    handleFileChange,
+  } = useFileUpload(handleFileSelect, handleFileError);
 
   const handleUpload = useCallback(async () => {
     setLoading();
@@ -115,7 +93,7 @@ export default function AnalyticsPage() {
       const historyEntry = {
         id: Date.now(),
         fileName: file.name,
-        uploadDate: new Date().toLocaleDateString('ru-RU'),
+        uploadDate: DateService.getCurrentDate(),
         status: 'success',
         stats: finalStats,
       };
@@ -128,42 +106,13 @@ export default function AnalyticsPage() {
       const historyEntry = {
         id: Date.now(),
         fileName: file.name,
-        uploadDate: new Date().toLocaleDateString('ru-RU'),
+        uploadDate: DateService.getCurrentDate(),
         status: 'error',
       };
 
       addEntry(historyEntry);
     }
   }, [file, setLoading, setError, setStats, updateStats, addEntry]);
-
-  const formatDayOfYear = useCallback((dayNumber) => {
-    const months = [
-      'января',
-      'февраля',
-      'марта',
-      'апреля',
-      'мая',
-      'июня',
-      'июля',
-      'августа',
-      'сентября',
-      'октября',
-      'ноября',
-      'декабря',
-    ];
-
-    const daysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-
-    let remainingDays = dayNumber;
-    let month = 0;
-
-    while (remainingDays > daysInMonth[month]) {
-      remainingDays -= daysInMonth[month];
-      month++;
-    }
-
-    return `${remainingDays} ${months[month]}`;
-  }, []);
 
   const getDisplayValue = useCallback(
     (key, value) => {
@@ -172,12 +121,12 @@ export default function AnalyticsPage() {
       }
 
       if (key === 'less_spent_at' || key === 'big_spent_at') {
-        return formatDayOfYear(parseInt(value));
+        return DateService.formatDayOfYear(parseInt(value));
       }
 
       return value;
     },
-    [stats, formatDayOfYear],
+    [stats],
   );
 
   const getFieldDescription = useCallback((key) => {
@@ -244,7 +193,7 @@ export default function AnalyticsPage() {
     <div
       className={styles.container}
       style={containerStyle}
-      onDrop={onDrop}
+      onDrop={handleDrop}
       onDragEnter={handleDragEnter}
       onDragLeave={handleDragLeave}
       onDragOver={handleDragOver}
@@ -261,7 +210,7 @@ export default function AnalyticsPage() {
                 <input
                   type="file"
                   accept=".csv"
-                  onChange={onFileChange}
+                  onChange={handleFileChange}
                   className={styles.formUploadInput}
                   id="fileInput"
                 />
