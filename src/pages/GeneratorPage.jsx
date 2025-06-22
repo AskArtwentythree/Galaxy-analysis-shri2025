@@ -20,6 +20,8 @@ export default function GeneratorPage() {
         headers: {
           Accept: 'text/csv, application/csv, */*',
         },
+        mode: 'cors',
+        credentials: 'omit',
       });
 
       // console.log('Response status:', response.status);
@@ -33,17 +35,19 @@ export default function GeneratorPage() {
       const contentType = response.headers.get('content-type');
       // console.log('Content-Type:', contentType);
 
-      let blob;
-      if (contentType && contentType.includes('text/csv')) {
-        const text = await response.text();
-        // console.log('Response text length:', text.length);
-        blob = new Blob([text], { type: 'text/csv' });
-      } else {
-        blob = await response.blob();
+      if (!response.body) {
+        throw new Error('Ответ не содержит данных');
       }
+
+      const arrayBuffer = await response.arrayBuffer();
+      const blob = new Blob([arrayBuffer], { type: 'text/csv' });
 
       // console.log('Blob size:', blob.size);
       // console.log('Blob type:', blob.type);
+
+      if (blob.size === 0) {
+        throw new Error('Получен пустой файл от сервера');
+      }
 
       const url_download = URL.createObjectURL(blob);
       const a = document.createElement('a');
