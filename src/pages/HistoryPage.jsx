@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { createPortal } from 'react-dom';
 import { useHistoryStore } from '../store/historyStore';
 import styles from './HistoryPage.module.css';
 
@@ -248,9 +249,11 @@ export default function HistoryPage() {
         </div>
       </section>
 
-      {modalStats && (
-        <Modal stats={modalStats} onClose={() => setModalStats(null)} />
-      )}
+      {modalStats &&
+        createPortal(
+          <Modal stats={modalStats} onClose={() => setModalStats(null)} />,
+          document.body,
+        )}
     </div>
   );
 }
