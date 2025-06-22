@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { useAnalyticsStore } from '../store/AnalyticsStore';
+import { useHistoryStore } from '../store/historyStore';
 import styles from './AnalyticsPage.module.css';
 
 export default function AnalyticsPage() {
@@ -15,12 +16,13 @@ export default function AnalyticsPage() {
     updateStats,
   } = useAnalyticsStore();
 
+  const { addEntry } = useHistoryStore();
   const [isHovering, setIsHovering] = useState(false);
 
   const onFileChange = useCallback(
     (e) => {
       const f = e.target.files[0];
-      if (f && f.name.endsWith('.csv')) {
+      if (f && (f.name.endsWith('.csv') || f.type === 'text/csv')) {
         setFile(f);
       } else if (f) {
         setFile(f);
@@ -35,7 +37,7 @@ export default function AnalyticsPage() {
       e.preventDefault();
       setIsHovering(false);
       const f = e.dataTransfer.files[0];
-      if (f?.name.endsWith('.csv')) {
+      if (f && (f.name.endsWith('.csv') || f.type === 'text/csv')) {
         setFile(f);
       } else if (f) {
         setFile(f);
@@ -106,6 +108,10 @@ export default function AnalyticsPage() {
 
       setStats(finalStats);
 
+      if (!finalStats || finalStats.rows_affected === 0) {
+        throw new Error('Файл не содержит валидных данных');
+      }
+
       const historyEntry = {
         id: Date.now(),
         fileName: file.name,
@@ -114,11 +120,7 @@ export default function AnalyticsPage() {
         stats: finalStats,
       };
 
-      const existingHistory = JSON.parse(
-        localStorage.getItem('uploadHistory') || '[]',
-      );
-      existingHistory.unshift(historyEntry);
-      localStorage.setItem('uploadHistory', JSON.stringify(existingHistory));
+      addEntry(historyEntry);
     } catch (err) {
       console.error(err);
       setError();
@@ -130,13 +132,9 @@ export default function AnalyticsPage() {
         status: 'error',
       };
 
-      const existingHistory = JSON.parse(
-        localStorage.getItem('uploadHistory') || '[]',
-      );
-      existingHistory.unshift(historyEntry);
-      localStorage.setItem('uploadHistory', JSON.stringify(existingHistory));
+      addEntry(historyEntry);
     }
-  }, [file, setLoading, setError, setStats, updateStats]);
+  }, [file, setLoading, setError, setStats, updateStats, addEntry]);
 
   const formatDayOfYear = useCallback((dayNumber) => {
     const months = [
